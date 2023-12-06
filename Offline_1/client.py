@@ -52,108 +52,109 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 
     ## FILE
 
-    data = s.recv(1024)
-    recData = pickle.loads(data)
+    # data = s.recv(1024)
+    # recData = pickle.loads(data)
 
-    lev = int(recData[0])
-    totalChunks = recData[1]
-    key = recData[2]
-    fileName = recData[3]
+    # lev = int(recData[0])
+    # totalChunks = recData[1]
+    # key = recData[2]
+    # fileName = recData[3]
 
-    hexKey = key.encode("utf-8").hex()
-    hexKey = keyChecking(hexKey, lev)
-    keys = keyScheduling(hexKey, lev)
+    # hexKey = key.encode("utf-8").hex()
+    # hexKey = keyChecking(hexKey, lev)
+    # keys = keyScheduling(hexKey, lev)
 
-    filePath = 'client/' + fileName
+    # filePath = 'client/' + fileName
 
-    print(totalChunks)
-    fileData = bytearray()
-    cnt = 0
-    while cnt != totalChunks:
+    # print(totalChunks)
+    # fileData = bytearray()
+    # cnt = 0
+    # while cnt != totalChunks:
+    #     receivedData = s.recv(1024)
+    #     data = pickle.loads(receivedData)
 
-        receivedData = s.recv(1024)
-        data = pickle.loads(receivedData)
-
-        ini = data[0]
-        text = data[1]
+    #     ini = data[0]
+    #     text = data[1]
         
-        print("Receieved Cipher Hex:")
-        print("In Hex:", text)
-        print()
+    #     print("Receieved Cipher Hex:")
+    #     print("In Hex:", text)
+    #     print()
 
-        hexText = decrypt(text, keys, lev, ini)
-        hexText = removeCBCPadding(hexText)
-        print("Deciphered Hex:")
-        print("In Hex:", hexText)
-        print()
+    #     hexText = decrypt(text, keys, lev, ini)
+    #     hexText = removeCBCPadding(hexText)
+    #     print("Deciphered Hex:")
+    #     print("In Hex:", hexText)
+    #     print()
 
-        data = bytearray.fromhex(hexText)
-        fileData.extend(data)
-        cnt += 1
+    #     data = bytearray.fromhex(hexText)
+    #     fileData.extend(data)
+    #     cnt += 1
 
-    with open(filePath, 'wb') as file:
-        file.write(fileData)
+    #     ack = 'Receieved chunk: ' + str(cnt)
+    #     ack = pickle.dumps(ack)
+    #     s.sendall(ack)
+
+
+    # with open(filePath, 'wb') as file:
+    #     file.write(fileData)
 
 
 
     #ECC
 
-    # data = s.recv(20000).decode().split(' ')
+    data = s.recv(20000).decode().split(' ')
 
-    # lev = data[0]
-    # lev = int(lev)
-    # Ga = int(data[1])
-    # Gb = int(data[2])
-    # G = (Ga, Gb)
-    # a = int(data[3])
-    # p = int(data[4])
-    # Aa = int(data[5])
-    # Ab = int(data[6])
-    # A = (Aa, Ab)
+    lev = data[0]
+    lev = int(lev)
+    Ga = int(data[1])
+    Gb = int(data[2])
+    G = (Ga, Gb)
+    a = int(data[3])
+    p = int(data[4])
+    Aa = int(data[5])
+    Ab = int(data[6])
+    A = (Aa, Ab)
 
-    # bb = random.randint(p/2, p-1)
-    # B = scalarMultiply(bb, G, a, p)
+    bb = random.randint(p/2, p-1)
+    B = scalarMultiply(bb, G, a, p)
     
-    # s.sendall((str(B[0])+' '+str(B[1])).encode())
+    s.sendall((str(B[0])+' '+str(B[1])).encode())
 
-    # key = scalarMultiply(bb, A, a, p)
+    key = scalarMultiply(bb, A, a, p)
 
-    # hexKey = hex(key[0])
-    # ini = hex(key[1])
+    hexKey = hex(key[0])
+    ini = hex(key[1])
 
-    # hexKey = hexKey[2:]
-    # ini = ini[2:]
+    hexKey = hexKey[2:]
+    ini = ini[2:]
 
-    # hexKey = keyChecking(hexKey, lev)
-    # ini = keyChecking(ini, lev)
+
+    hexKey = keyChecking(hexKey, lev)
+    ini = keyChecking(ini, lev)
+
+    ini = ini[:32]
+
+
+    cipherText = s.recv(1024).decode()
+
+    print("Receieved Cipher Text:")
+    print("In Hex:", cipherText)
+    print("In ASCII:", bytearray.fromhex(cipherText).decode('Latin1'))
+    print()
 
     
+    keys = keyScheduling(hexKey, lev)
+
+    hexText = decrypt(cipherText, keys, lev, ini)
+
+    hexText = removeCBCPadding(hexText)
+    print("Deciphered Text:")
+    print("In Hex:", hexText)
+    print("In ASCII:", bytearray.fromhex(hexText).decode('Latin1'))
+    print()
 
 
-    # cipherText = s.recv(1024).decode()
-
-    # print("Receieved Cipher Text:")
-    # print("In Hex:", cipherText)
-    # print("In ASCII:", bytearray.fromhex(cipherText).decode('Latin1'))
-    # print()
-
-    
-    # keyStart = time.time()
-    # keys = keyScheduling(hexKey, lev)
-    # keyEnd = time.time()
-
-    # decStart = time.time()
-    # hexText = decrypt(cipherText, keys, lev, ini)
-    # decEnd = time.time()
-
-    # hexText = removeCBCPadding(hexText)
-    # print("Deciphered Text:")
-    # print("In Hex:", hexText)
-    # print("In ASCII:", bytearray.fromhex(hexText).decode('Latin1'))
-    # print()
-
-
-    # s.sendall('Text received'.encode())
+    s.sendall('Text received'.encode())
 
 
 

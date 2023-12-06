@@ -74,13 +74,7 @@ def getInitial(lev):
 
 
 
-
-
-
-
-
-
-def ecc(lev):
+def ecdh(lev):
     G, a, p = getInitial(lev)
     
     ka = random.randint(p/2, p-1)
@@ -105,7 +99,7 @@ def measureTime(lev, trials):
 
     for _ in range(trials):
         
-        ta, tb, tc = ecc(lev)
+        ta, tb, tc = ecdh(lev)
         timeA.append(ta)
         timeB.append(tb)
         timeKey.append(tc)
@@ -116,8 +110,7 @@ def measureTime(lev, trials):
 
     return avgA, avgB, avgKey
 
-
-def main():
+def benchmark():
     levs = [128, 192, 256]  
     trials = 5  
 
@@ -125,6 +118,9 @@ def main():
     for lev in levs:   
         avgA, avgB, avgKey = measureTime(lev, trials)
         print(f"{lev:<5}{avgA*1000:<15.10f}{avgB*1000:<15.10f}{avgKey*1000:<15.10f}")
+
+def main():
+    benchmark()
 
 if __name__ == "__main__":
     main()

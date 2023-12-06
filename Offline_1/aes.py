@@ -4,9 +4,9 @@ import time
 import random
 
 
-def IV(lev):
-    x = random.getrandbits(lev)
-    x |= (1 << lev-1) | 1
+def IV():
+    x = random.getrandbits(128)
+    x |= (1 << 127) | 1
 
     x = hex(x)
     x = x[2:]
@@ -324,7 +324,7 @@ def aes():
     text = input()
 
 
-    ini = IV(lev)
+    ini = IV()
 
     hexText = text.encode("utf-8").hex()
     hexKey = key.encode("utf-8").hex()
@@ -381,7 +381,7 @@ def aesCTR():
     text = input()
 
 
-    ini = IV(lev)
+    ini = IV()
 
     hexText = text.encode("utf-8").hex()
     hexKey = key.encode("utf-8").hex()
@@ -430,7 +430,7 @@ def aesCTR():
 
 
 def main():
-    aesCTR()
+    aes()
 
 if __name__ == "__main__":
     main()
