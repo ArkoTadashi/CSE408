@@ -1,10 +1,13 @@
 
 import socket
-from aes import * 
 import math
-from ecc import *
 import random
 import pickle
+
+
+from importlib import import_module
+aes = import_module('1905109_f1')
+ecc = import_module('1905109_f2')
 
 host = "localhost"
 port = 12345
@@ -24,7 +27,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     # key = input()
 
 
-    # ini = IV()
+    # ini = aes.IV()
     # print(ini)
 
     # sendingData = pickle.dumps((lev, key, ini))
@@ -45,13 +48,13 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     # print()
 
     # lev = int(lev)
-    # hexKey = keyChecking(hexKey, lev)
-    # keys = keyScheduling(hexKey, lev)
+    # hexKey = aes.keyChecking(hexKey, lev)
+    # keys = aes.keyScheduling(hexKey, lev)
 
-    # hexText = addCBCPadding(hexText)
-    # hexTexts = textListGenerator(hexText)
+    # hexText = aes.addCBCPadding(hexText)
+    # hexTexts = aes.textListGenerator(hexText)
 
-    # cipherText = encrypt(hexTexts, keys, lev, ini)
+    # cipherText = aes.encrypt(hexTexts, keys, lev, ini)
 
     # print("Cipher Text:")
     # print("In Hex:", cipherText)
@@ -75,8 +78,8 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 
 
     # hexKey = key.encode("utf-8").hex()
-    # hexKey = keyChecking(hexKey, lev)
-    # keys = keyScheduling(hexKey, lev)
+    # hexKey = aes.keyChecking(hexKey, lev)
+    # keys = aes.keyScheduling(hexKey, lev)
 
 
 
@@ -98,17 +101,17 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 
 
     # for i in range(0, len(fileData), chunk):
-    #     ini = IV()
+    #     ini = aes.IV()
 
     #     data = fileData[i:i+chunk]
     #     hexData = ''.join(['{:02x}'.format(byte) for byte in data])
     #     print('File HexData: ')
     #     print(hexData)
 
-    #     hexText = addCBCPadding(hexData)
-    #     hexTexts = textListGenerator(hexText)
+    #     hexText = aes.addCBCPadding(hexData)
+    #     hexTexts = aes.textListGenerator(hexText)
 
-    #     cipherText = encrypt(hexTexts, keys, lev, ini)
+    #     cipherText = aes.encrypt(hexTexts, keys, lev, ini)
 
     #     print("Cipher HexData:")
     #     print("In Hex:", cipherText)
@@ -136,10 +139,10 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     lev = int(input())
 
     
-    G, a, p = getInitial(lev)
+    G, a, p = ecc.getInitial(lev)
 
     aa = random.randint(p/2, p-1)
-    A = scalarMultiply(aa, G, a, p)
+    A = ecc.scalarMultiply(aa, G, a, p)
 
     c.sendall((str(lev)+' '+str(G[0])+' '+str(G[1])+' '+str(a)+' '+str(p)+' '+str(A[0])+' '+str(A[1])).encode())
 
@@ -149,7 +152,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     B = (Ba, Bb)
 
 
-    key = scalarMultiply(aa, B, a, p)
+    key = ecc.scalarMultiply(aa, B, a, p)
 
     hexKey = hex(key[0])
     ini = hex(key[1])
@@ -157,8 +160,8 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     hexKey = hexKey[2:]
     ini = ini[2:]
 
-    hexKey = keyChecking(hexKey, lev)
-    ini = keyChecking(ini, lev)
+    hexKey = aes.keyChecking(hexKey, lev)
+    ini = aes.keyChecking(ini, lev)
     ini = ini[:32]
 
 
@@ -174,12 +177,12 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     print("In HEX:", hexKey)
     print()
 
-    keys = keyScheduling(hexKey, lev)
+    keys = aes.keyScheduling(hexKey, lev)
 
-    hexText = addCBCPadding(hexText)
-    hexTexts = textListGenerator(hexText)
+    hexText = aes.addCBCPadding(hexText)
+    hexTexts = aes.textListGenerator(hexText)
 
-    cipherText = encrypt(hexTexts, keys, lev, ini)
+    cipherText = aes.encrypt(hexTexts, keys, lev, ini)
 
     print("Cipher Text:")
     print("In Hex:", cipherText)

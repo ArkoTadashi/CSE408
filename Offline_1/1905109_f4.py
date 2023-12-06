@@ -1,11 +1,13 @@
 
 import socket
-from aes import *
-from ecc import *
 import random
 import ast
 import math
 import pickle
+
+from importlib import import_module
+aes = import_module('1905109_f1')
+ecc = import_module('1905109_f2')
 		 
 
 host = "localhost"
@@ -34,12 +36,12 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     # print()
 
     # lev = int(lev)
-    # hexKey = keyChecking(hexKey, lev)
-    # keys = keyScheduling(hexKey, lev)
+    # hexKey = aes.keyChecking(hexKey, lev)
+    # keys = aes.keyScheduling(hexKey, lev)
 
-    # hexText = decrypt(cipherText, keys, lev, ini)
+    # hexText = aes.decrypt(cipherText, keys, lev, ini)
 
-    # hexText = removeCBCPadding(hexText)
+    # hexText = aes.removeCBCPadding(hexText)
     # print("Deciphered Text:")
     # print("In Hex:", hexText)
     # print("In ASCII:", bytearray.fromhex(hexText).decode('Latin1'))
@@ -61,8 +63,8 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     # fileName = recData[3]
 
     # hexKey = key.encode("utf-8").hex()
-    # hexKey = keyChecking(hexKey, lev)
-    # keys = keyScheduling(hexKey, lev)
+    # hexKey = aes.keyChecking(hexKey, lev)
+    # keys = aes.keyScheduling(hexKey, lev)
 
     # filePath = 'client/' + fileName
 
@@ -80,8 +82,8 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     #     print("In Hex:", text)
     #     print()
 
-    #     hexText = decrypt(text, keys, lev, ini)
-    #     hexText = removeCBCPadding(hexText)
+    #     hexText = aes.decrypt(text, keys, lev, ini)
+    #     hexText = aes.removeCBCPadding(hexText)
     #     print("Deciphered Hex:")
     #     print("In Hex:", hexText)
     #     print()
@@ -116,11 +118,11 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     A = (Aa, Ab)
 
     bb = random.randint(p/2, p-1)
-    B = scalarMultiply(bb, G, a, p)
+    B = ecc.scalarMultiply(bb, G, a, p)
     
     s.sendall((str(B[0])+' '+str(B[1])).encode())
 
-    key = scalarMultiply(bb, A, a, p)
+    key = ecc.scalarMultiply(bb, A, a, p)
 
     hexKey = hex(key[0])
     ini = hex(key[1])
@@ -129,8 +131,8 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     ini = ini[2:]
 
 
-    hexKey = keyChecking(hexKey, lev)
-    ini = keyChecking(ini, lev)
+    hexKey = aes.keyChecking(hexKey, lev)
+    ini = aes.keyChecking(ini, lev)
 
     ini = ini[:32]
 
@@ -143,11 +145,11 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     print()
 
     
-    keys = keyScheduling(hexKey, lev)
+    keys = aes.keyScheduling(hexKey, lev)
 
-    hexText = decrypt(cipherText, keys, lev, ini)
+    hexText = aes.decrypt(cipherText, keys, lev, ini)
 
-    hexText = removeCBCPadding(hexText)
+    hexText = aes.removeCBCPadding(hexText)
     print("Deciphered Text:")
     print("In Hex:", hexText)
     print("In ASCII:", bytearray.fromhex(hexText).decode('Latin1'))
