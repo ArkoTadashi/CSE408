@@ -124,7 +124,7 @@ def main():
     print(f"{'k':<5}{'A':<15}{'B':<15}{'Shared key R':<15}")
     for lev in levs:   
         avgA, avgB, avgKey = measureTime(lev, trials)
-        print(f"{lev:<5}{avgA:<15.10f}{avgB:<15.10f}{avgKey:<15.10f}")
+        print(f"{lev:<5}{avgA*1000:<15.10f}{avgB*1000:<15.10f}{avgKey*1000:<15.10f}")
 
 if __name__ == "__main__":
     main()
